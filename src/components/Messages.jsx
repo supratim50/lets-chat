@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Message from "./Message";
 import { ChatContext } from '../context/ChatContext';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, collection } from 'firebase/firestore';
 import { db } from '../firebase';
 
 
@@ -12,30 +12,32 @@ const Messages = () => {
   const {data} = useContext(ChatContext);
 
   useEffect(() => {
-    const getChats = () => {
-        onSnapshot(doc(db, "chats", data.chatId), doc => {
-        if(doc.exists()) {
-          setMessages(doc.data().messages)
-        }
-        setLoading(false);
+    console.log(data.chatId)
+
+    if(data.chatId) {
+      const unsub = onSnapshot(doc(db, 'chats', data.chatId), doc => {
+        console.log("messages : ", doc.data());
+        setMessages(doc.data().messages);
       })
+
+      return () => unsub();
     }
 
-    return () => {
-      if(data.chatId) {
-        getChats();
-        console.log(messages)
-      }
-    }
   }, [data.chatId]);
 
   return (
     <div className='messages'>
       {
-        data.chatId
-        && messages.map(message => (
-          <Message message={message} key={message.id} />
-      ))
+        messages.length > 0
+        ? messages.map(msg => (
+          <Message message={msg} key={msg.id} />
+          // console.log(msg)
+        ))
+        : (
+          <div className='empty_msg'>
+            <p>Don't have any Conversation with {data.user.displayName}</p>
+          </div>
+        )
       }
     </div>
   )
