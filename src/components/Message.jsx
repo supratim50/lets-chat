@@ -10,7 +10,6 @@ const Message = ({message, key}) => {
   const ref = useRef();
 
   useEffect(() => {
-    console.log(message)
     ref.current?.scrollIntoView({behavior: "smooth"});
   }, [message])
 
@@ -21,7 +20,7 @@ const Message = ({message, key}) => {
         <span>just now</span>
       </div>
       <div className="messageContent">
-        <p>{message.text}</p>
+        {message.text && <p>{message.text}</p>}
         {
           message.img && <img src={message.img} alt="" />
         }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { collection, doc, getDocs, getDoc, query, serverTimestamp, setDoc, updateDoc, where } from "firebase/firestore";
 import {db} from "../firebase";
 import {AuthContext} from "../context/AuthContext";
@@ -30,7 +30,7 @@ const Search = () => {
   }
 
   const handleKey = (e) => {
-    e.code === 'Enter' && handleSearch(); 
+    (e.keyCode === 13) && handleSearch(); 
   }
 
   const handleSelect = async () => {
@@ -77,6 +77,12 @@ const Search = () => {
     setUsername("");
   }
 
+  useEffect(() => {
+    if(username === '') {
+      setUser(null);
+    }
+  }, [username])
+
   return (
     <div className='search'>
         <div className="searchForm">
@@ -87,6 +93,7 @@ const Search = () => {
               onKeyDown={handleKey} 
               value={username}
             />
+            {username !== "" && <p onClick={() => setUsername("")}>X</p>}
         </div>
         {err && <span>User not Found</span> }
         {

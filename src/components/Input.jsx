@@ -19,7 +19,12 @@ const Input = () => {
   const {data} = useContext(ChatContext);
 
   const handleSend = async () => {
+    if(img === null && text === "") {
+      return;
+    }
+  
     setLoading(true);
+    
       if(img) {
         const storageRef = ref(storage, uuid());
   
@@ -45,6 +50,7 @@ const Input = () => {
             });
           }
         );
+      setLoading(false);
       }else {
         await updateDoc(doc(db, "chats", data.chatId), {
           messages: arrayUnion({
@@ -54,22 +60,25 @@ const Input = () => {
             date: Timestamp.now()
           })
         })
+        setLoading(false);
       }
       
     setImg(null);
     setText("");
-    setLoading(false);
+
+    
+    let lastMsg = img ? "img-social-chat" : text;
     // current user 
     await updateDoc(doc(db, "userChats", currentUser.uid), {
       [data.chatId + ".lastMessage"]: {
-        text
+        text: lastMsg
       },
       [data.chatId+".date"]: serverTimestamp()
     })
     // user 
     await updateDoc(doc(db, "userChats", data.user.uid), {
       [data.chatId + ".lastMessage"]: {
-        text
+        text: lastMsg
       },
       [data.chatId+".date"]: serverTimestamp()
     })
