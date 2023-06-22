@@ -30,7 +30,8 @@ const Search = () => {
   }
 
   const handleKey = (e) => {
-    (e.keyCode === 13) && handleSearch(); 
+    e.preventDefault();
+    handleSearch(); 
   }
 
   const handleSelect = async () => {
@@ -86,13 +87,15 @@ const Search = () => {
   return (
     <div className='search'>
         <div className="searchForm">
-            <input 
-              type="text" 
-              placeholder='Find a user' 
-              onChange={e => setUsername(e.target.value.toLowerCase())} 
-              onKeyDown={handleKey} 
-              value={username}
-            />
+            <form onSubmit={handleKey}>
+              <input 
+                type="text" 
+                placeholder='Find a user' 
+                onChange={e => setUsername(e.target.value.toLowerCase())} 
+                // onKeyDown={handleKey} 
+                value={username}
+              />
+            </form>
             {username !== "" && <p onClick={() => setUsername("")}>X</p>}
         </div>
         {err && <span>User not Found</span> }
